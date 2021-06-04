@@ -1,8 +1,8 @@
 from telethon import TelegramClient, events, Button
-from gogoanimeapi import gogoanime as gogo
-from Kissmangaapi import kissmangaapi as kiss
-import formating_results as format
-from helper import start_text, help_text
+from api.gogoanimeapi import gogoanime as gogo
+from api.kissmangaapi import kissmangaapi as kiss
+import utils.formating_results as format
+from utils.helper import start_text, help_text
 import os
 from config import API_ID, API_HASH, TOKEN
 
