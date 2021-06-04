@@ -1,0 +1,49 @@
+import os
+from pyrogram import Client, filters, __version__
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from functools import partial
+from config import TOKEN, API_ID, API_HASH
+import formating_results as format
+from helper import start_text, help_text
+from gogoanimeapi import gogoanime as gogo
+from Kissmangaapi import kissmangaapi as kiss
+
+goth = Client(
+    "goth",
+    bot_token=TOKEN,
+    api_id=API_ID,
+    api_hash=API_HASH,
+)
+
+cmd = partial(filters.command, prefixes=["/", "!"])
+
+photo = "https://telegra.ph/file/0f89bae1e77ca43f81f78.jpg"
+
+pm = InlineKeyboardMarkup(
+            [
+                [
+                    InlineKeyboardButton(
+                        text="Contact Me in PM!",
+                        url="t.me/AnimeGothBot?start",
+                    )
+                ]
+            ]
+        )
+
+@goth.on_message(cmd(["start", "start@AnimeGothBot"]))
+async def start(_, message):
+    if message.chat.type == "private":
+        await message.reply_photo(photo, caption=start_text, parse_mode="markdown")
+        return
+    else:
+        await message.reply_text("Hello {mention}, I am an Anime Bot. PM me and check my Features!")
+        return
+        
+@goth.on_message(cmd(["help", "help@AnimeGothBot"]))
+async def helper(_, message):
+    if message.chat.type == "private":
+        await message.reply_text(help_text, parse_mode="markdown")
+        return
+    else:
+        await message.reply_text("PM me for more info!", reply_markup=pm)
+

@@ -4,31 +4,28 @@ from Kissmangaapi import kissmangaapi as kiss
 import formating_results as format
 from helper import start_text, help_text
 import os
+from config import API_ID, API_HASH, TOKEN
 
-api_id = os.environ.get('API_ID')
-api_hash = os.environ.get('API_HASH')
-bot_token = os.environ.get('BOT_TOKEN')
-
-bot = TelegramClient('bot', api_id, api_hash).start(bot_token=bot_token)
+goth = TelegramClient('goth', api_id=API_ID, api_hash=API_HASH).start(bot_token=TOKEN)
 
 try:    # Anime Section
     
-    @bot.on(events.NewMessage(pattern="/start"))
+    @goth.on(events.NewMessage(pattern="/start"))
     async def event_handler_start(event):
-        await bot.send_message(
+        await goth.send_message(
             event.chat_id,
             start_text,
             file='https://tenor.com/view/chika-fujiwara-kaguya-sama-love-is-war-anime-wink-smile-gif-18043249'
         )
 
-    @bot.on(events.NewMessage(pattern="/help"))
+    @goth.on(events.NewMessage(pattern="/help"))
     async def event_handler_help(event):
-        await bot.send_message(
+        await goth.send_message(
             event.chat_id,
             help_text
             )
 
-    @bot.on(events.NewMessage(pattern="/latest"))
+    @goth.on(events.NewMessage(pattern="/latest"))
     async def event_handler_latest(event):
         home_page = gogo.get_home_page()
         (names, ids, epnums) = format.format_home_results(home_page)
@@ -39,16 +36,16 @@ try:    # Anime Section
                     [Button.inline(names[i], data=f"lt:{ids[i]}")])
             except:
                 pass
-        await bot.send_message(
+        await goth.send_message(
             event.chat_id,
             'Latest anime added:',
             buttons=buttonss
             )
 
-    @bot.on(events.NewMessage(pattern="/anime"))
+    @goth.on(events.NewMessage(pattern="/anime"))
     async def event_handler_anime(event):
         if '/anime' == event.raw_text:
-            await bot.send_message(
+            await goth.send_message(
                 event.chat_id,
                 'Command must be used like this\n/anime <name of anime>\nexample: /anime One Piece',
                 file='https://media1.tenor.com/images/eaac56a1d02536ed416b5a080fdf73ba/tenor.gif?itemid=15075442'
@@ -67,7 +64,7 @@ try:    # Anime Section
                             buttons1.append([Button.inline(
                                 f"{names[i][:22]}. . .{names[i][-22:]}", data=f"split:{anime_name}:{ids[i][-25:]}")])
                         except:
-                            bot.send_message(
+                            goth.send_message(
                                 event.chat_id,
                                 "Name u searched for is too long",
                                 file='https://media.giphy.com/media/4pk6ba2LUEMi4/giphy.gif'
@@ -76,28 +73,28 @@ try:    # Anime Section
                         buttons1.append(
                             [Button.inline(names[i], data=f"dets:{ids[i]}")])
 
-                await bot.send_message(
+                await goth.send_message(
                     event.chat_id,
                     'Search Results:',
                     buttons=buttons1)
             except:
-                await bot.send_message(
+                await goth.send_message(
                     event.chat_id,
                     'Not Found, Check for Typos or search Japanese name',
                     file='https://media.giphy.com/media/4pk6ba2LUEMi4/giphy.gif'
                 )
 
-    @bot.on(events.NewMessage(pattern="/source"))
+    @goth.on(events.NewMessage(pattern="/source"))
     async def event_handler_source(event):
-        await bot.send_message(
+        await goth.send_message(
             event.chat_id,
-            '[Source Code On Github](https://github.com/MiyukiKun/Anime_Gallery_Bot)\nThis bot was hosted on Heroku'
+            "Source Code On [Github](https://github.com/swatv3nub/AnimeBot)\nHosted in Heroku, Please don't aboose"
         )
     
-    @bot.on(events.NewMessage(pattern="/batch"))
+    @goth.on(events.NewMessage(pattern="/batch"))
     async def event_handler_batch(event):
         if event.chat_id < 0:
-            await event.reply("If you want to download in batch contact me in pm\n@Anime_Gallery_Robot")
+            await event.reply("If you want to download in batch contact me in pm\n@AnimeGothBot")
             return
         try:
             text = event.raw_text.split()
@@ -115,9 +112,9 @@ try:    # Anime Section
                         break
 
         except:
-            await event.reply("Something went wrong.....\nCheck if you entered command properly\n\nUse /help or go to \n@Anime_Gallery_Robot_Support if you have any doubts")
+            await event.reply("Something went wrong.....\nCheck if you entered command properly\n\nUse /help or go to \n@HackfreaksSupport if you have any doubts")
 
-    @bot.on(events.NewMessage(pattern="/download"))
+    @goth.on(events.NewMessage(pattern="/download"))
     async def event_handler_batch(event):
         try:
             text = event.raw_text.split()
@@ -134,7 +131,7 @@ try:    # Anime Section
             for i in range(int(split_data[1]), (int(split_data[2]) + 1)):
                 list_of_links.append(gogo.get_episodes_link(split_data[0], i))
             format.batch_download_txt(split_data[0], list_of_links)
-            await bot.send_message(
+            await goth.send_message(
                 event.chat_id,
                 "Import this file in **1DM** app.",
                 file= f"{split_data[0]}.txt"
@@ -142,16 +139,16 @@ try:    # Anime Section
             )
 
         except:
-            await event.reply("Something went wrong.....\nCheck if you entered command properly\n\nUse /help or go to \n@Anime_Gallery_Robot_Support if you have any doubts")         
+            await event.reply("Something went wrong.....\nCheck if you entered command properly\n\nUse /help or go to \n@HackfreaksSupport if you have any doubts")         
 
-    @bot.on(events.CallbackQuery(pattern=b"lt:"))
+    @goth.on(events.CallbackQuery(pattern=b"lt:"))
     async def callback_for_latest(event):
         data = event.data.decode('utf-8')
         split_data = data.split(":")
         animeid = split_data[-1]
         await send_details(event, animeid)
 
-    @bot.on(events.CallbackQuery(pattern=b"Download"))
+    @goth.on(events.CallbackQuery(pattern=b"Download"))
     async def callback_for_download(event):
         data = event.data.decode('utf-8')
         x = data.split(":")
@@ -184,7 +181,7 @@ try:    # Anime Section
                 buttons=button2
             )
 
-    @bot.on(events.CallbackQuery(pattern=b"longdl"))
+    @goth.on(events.CallbackQuery(pattern=b"longdl"))
     async def callback_for_download_long(event):
         data = event.data.decode('utf-8')
         x = data.split(":")
@@ -207,7 +204,7 @@ try:    # Anime Section
             buttons=button2
         )
 
-    @bot.on(events.CallbackQuery(pattern=b"btz:"))
+    @goth.on(events.CallbackQuery(pattern=b"btz:"))
     async def callback_for_choosebuttons(event):
         data = event.data.decode('utf-8')
         data_split = data.split(':')
@@ -225,7 +222,7 @@ try:    # Anime Section
             buttons=button3
         )
 
-    @bot.on(events.CallbackQuery(pattern=b"etz:"))
+    @goth.on(events.CallbackQuery(pattern=b"etz:"))
     async def callback_for_choosebuttons1(event):
         data = event.data.decode('utf-8')
         data_split = data.split(':')
@@ -243,7 +240,7 @@ try:    # Anime Section
             buttons=button3
         )
 
-    @bot.on(events.CallbackQuery(pattern=b"ep:"))
+    @goth.on(events.CallbackQuery(pattern=b"ep:"))
     async def callback_for_downlink(event):
         data = event.data.decode('utf-8')
         try:
@@ -252,7 +249,7 @@ try:    # Anime Section
         except:
             pass
 
-    @bot.on(events.CallbackQuery(pattern=b"spp:"))
+    @goth.on(events.CallbackQuery(pattern=b"spp:"))
     async def callback_for_downlink_long(event):
         data = event.data.decode('utf-8')
         x = data.split(":")
@@ -264,13 +261,13 @@ try:    # Anime Section
                 break
         await send_download_link(event, id, x[1])
 
-    @bot.on(events.CallbackQuery(pattern=b"dets:"))
+    @goth.on(events.CallbackQuery(pattern=b"dets:"))
     async def callback_for_details(event):
         data = event.data.decode('utf-8')
         x = data.split(":")
         await send_details(event, x[1])
 
-    @bot.on(events.CallbackQuery(pattern=b"split:"))
+    @goth.on(events.CallbackQuery(pattern=b"split:"))
     async def callback_for_details_long(event):
         data = event.data.decode('utf-8')
         await send_details(event, data)
@@ -296,7 +293,7 @@ try:    # Anime Section
         await event.edit('Search Results:')
         try:
             try:
-                await bot.send_message(
+                await goth.send_message(
                     event.chat_id,
                     f"{search_details.get('title')}\nYear: {search_details.get('year')}\nStatus: {search_details.get('status')}\nGenre: {x}\nEpisodes: {search_details.get('episodes')}\nAnimeId: `{id}`",
                     file=search_details.get('image_url'),
@@ -304,7 +301,7 @@ try:    # Anime Section
                         "Download", data=f"Download:{id}:{search_details.get('episodes')}")]
                 )
             except:
-                await bot.send_message(
+                await goth.send_message(
                     event.chat_id,
                     f"{search_details.get('title')}\nYear: {search_details.get('year')}\nStatus: {search_details.get('status')}\nGenre: {x}\nEpisodes: {search_details.get('episodes')}\nAnimeId: `{id}`",
                     buttons=[Button.inline(
@@ -313,7 +310,7 @@ try:    # Anime Section
 
         except:
             try:
-                await bot.send_message(
+                await goth.send_message(
                     event.chat_id,
                     f"{search_details.get('title')}\nYear: {search_details.get('year')}\nStatus: {search_details.get('status')}\nGenre: {x}\nEpisodes: {search_details.get('episodes')}\nAnimeId: `{id}`",
                     file=search_details.get('image_url'),
@@ -321,7 +318,7 @@ try:    # Anime Section
                         "Download", data=f"longdl:{split_id[1]}:{id[-25:]}:{search_details.get('episodes')}")]
                 )
             except:
-                await bot.send_message(
+                await goth.send_message(
                     event.chat_id,
                     f"{search_details.get('title')}\nYear: {search_details.get('year')}\nStatus: {search_details.get('status')}\nGenre: {x}\nEpisodes: {search_details.get('episodes')}\nAnimeId: `{id}`",
                     file=search_details.get('image_url'),
@@ -335,7 +332,7 @@ try:    # Anime Section
         if "status" in result:
             return False
         else:
-            await bot.send_message(
+            await goth.send_message(
                 event.chat_id,
                 f"Download Links for episode {ep_num}\n{result}"
             )
@@ -346,10 +343,10 @@ except Exception as e:
     print("occured in anime Section")
 
 try:    # Manga Section
-    @bot.on(events.NewMessage(pattern="/manga"))
+    @goth.on(events.NewMessage(pattern="/manga"))
     async def event_handler_manga(event):
         if '/manga' == event.raw_text:
-            await bot.send_message(
+            await goth.send_message(
                 event.chat_id,
                 'Command must be used like this\n/manga <name of manga>\nexample: /manga One Piece',
                 file='https://media1.tenor.com/images/eaac56a1d02536ed416b5a080fdf73ba/tenor.gif?itemid=15075442'
@@ -361,7 +358,7 @@ try:    # Manga Section
             manga_name = " ".join(text)
             results = kiss.get_search_results(manga_name)
             if len(results) == 0:
-                await bot.send_message(
+                await goth.send_message(
                     event.chat_id,
                     'Not Found, Check for Typos or search Japanese name',
                     file='https://media.giphy.com/media/4pk6ba2LUEMi4/giphy.gif'
@@ -372,7 +369,7 @@ try:    # Manga Section
                     for manga in results:
                         button.append([Button.inline(manga[0], data=f"mid:{manga[1]}")])
 
-                    await bot.send_message(
+                    await goth.send_message(
                         event.chat_id,
                         "Search Results:",
                         buttons=button
@@ -381,7 +378,7 @@ try:    # Manga Section
                 except:
                     pass
 
-    @bot.on(events.NewMessage(pattern="/read"))
+    @goth.on(events.NewMessage(pattern="/read"))
     async def event_handler_manga(event):
         try:
             text = event.raw_text.split()
@@ -390,25 +387,25 @@ try:    # Manga Section
             split_data = anime_name.split(":")
             chap = kiss.get_manga_chapter(split_data[0], split_data[1])
             if chap == "Invalid Mangaid or chapter number":
-                await event.reply("Something went wrong.....\nCheck if you entered command properly\nCommon mistakes:\nYou didnt mention chapter number\nyou added space after : , dont leave space\n\n\n@Anime_Gallery_Robot_Support if you have any further doubts")
+                await event.reply("Something went wrong.....\nCheck if you entered command properly\nCommon mistakes:\nYou didnt mention chapter number\nyou added space after : , dont leave space\n\n\n@HackfreaksSupport if you have any further doubts")
                 return
             format.manga_chapter_html(f"{split_data[0]}{split_data[1]}", chap)
-            await bot.send_message(
+            await goth.send_message(
                 event.chat_id,
                 "Open this in google chrome",
                 file= f"{split_data[0]}{split_data[1]}.html"
             )
 
         except Exception as e:
-            await event.reply("Something went wrong.....\nCheck if you entered command properly\n\nUse /help or go to \n@Anime_Gallery_Robot_Support if you have any doubts")
+            await event.reply("Something went wrong.....\nCheck if you entered command properly\n\nUse /help or go to \n@HackfreaksSupport if you have any doubts")
             print(e)
 
-    @bot.on(events.CallbackQuery(pattern="mid:"))
+    @goth.on(events.CallbackQuery(pattern="mid:"))
     async def callback_for_mangadets(event):
         data = event.data.decode('utf-8')
         dets = kiss.get_manga_details(data[4:])
         await event.edit('Search Results:')
-        await bot.send_message(
+        await goth.send_message(
             event.chat_id,
             f"Name: {dets[0]}\nGenre: {', '.join(dets[2])}\nLatest Chapter: {dets[3]}\n\n\nCopy This command and add chapter number at end\n\n`/read {data[4:]}:`",
             file=dets[1]
@@ -418,6 +415,5 @@ except  Exception as e:
     print(e)
     print("occured in Manga Section")
 
-bot.start()
-
-bot.run_until_disconnected()
+goth.start()
+goth.run_until_disconnected()
