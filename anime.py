@@ -139,7 +139,27 @@ try:    # Anime Section
             )
 
         except:
-            await event.reply("Something went wrong.....\nCheck if you entered command properly\n\nUse /help or go to \n@HackfreaksSupport if you have any doubts")         
+            await event.reply("Something went wrong.....\nCheck if you entered command properly\n\nUse /help or go to \n@HackfreaksSupport if you have any doubts") 
+            
+    @goth.on(events.NewMessage(pattern="/nh"))
+    async def event_handler_anime(event):
+        if '/nh' == event.raw_text:
+            await goth.send_message(
+                event.chat_id,
+                'Command must be used like this\n/nh id\nexample: /nh 339989',
+                file='https://media1.tenor.com/images/eaac56a1d02536ed416b5a080fdf73ba/tenor.gif?itemid=15075442'
+            )
+        elif '/nh' in event.raw_text:
+            text = event.raw_text.split()
+            text.pop(0)
+            code = " ".join(text)
+            chapter = nh.get_chapter_by_code(code)
+            format.manga_chapter_html(f"{code}", chapter)
+            await goth.send_message(
+                event.chat_id,
+                "Open this in a Browser",
+                file= f"{code}.html"
+            )
 
     @goth.on(events.CallbackQuery(pattern=b"lt:"))
     async def callback_for_latest(event):
