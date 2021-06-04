@@ -1,12 +1,20 @@
 from telethon import TelegramClient, events, Button
 from api.gogoanimeapi import gogoanime as gogo
 from api.kissmangaapi import kissmangaapi as kiss
+from api.nhentaiapi import nhentaiapi as nh
 import utils.formating_results as format
 from utils.helper import start_text, help_text
 import os
+import logging
 from config import API_ID, API_HASH, TOKEN
 
 goth = TelegramClient('goth', api_id=API_ID, api_hash=API_HASH).start(bot_token=TOKEN)
+
+logging.basicConfig(
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
+)
+
+LOGGER = logging.getLogger(__name__)
 
 try:    # Anime Section
     
@@ -88,7 +96,7 @@ try:    # Anime Section
     async def event_handler_source(event):
         await goth.send_message(
             event.chat_id,
-            "Source Code On [Github](https://github.com/swatv3nub/AnimeBot)\nHosted in Heroku, Please don't aboose"
+            "Source Code On [Github](https://github.com/swatv3nub/AnimeBot)\nHosted in Heroku, Please don't aboose", link_preview=False
         )
     
     @goth.on(events.NewMessage(pattern="/batch"))
