@@ -77,7 +77,7 @@ pm = InlineKeyboardMarkup(
         )
 
     
-@bot.on_message(cmd(["batch", "batch@AnimeGothBot"]))
+@goth.on_message(cmd(["batch", "batch@AnimeGothBot"]))
 @capture_err
 async def batch(_, message):
     if message.chat.type != "private":
