@@ -1,6 +1,7 @@
 import math
 import time
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+import requests
 
 def shorten(description, info='anilist.co'):
     ms_g = ""
