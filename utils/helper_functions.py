@@ -1,5 +1,5 @@
 from api.gogoanimeapi import gogoanime as gogo
-from pyrogram import InlineKeyboardButton, InlineKeyboardMarkup
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from config import goth
 from utils import formating_results as format
 
