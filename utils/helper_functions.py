@@ -1,6 +1,5 @@
 from api.gogoanimeapi import gogoanime as gogo
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-from config import goth
 from utils import formating_results as format
 
 async def send_details(message, id):
