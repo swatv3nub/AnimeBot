@@ -1,24 +1,43 @@
-from bs4 import BeautifulSoup
+from AnimeBot import telegraph
 import requests
 
-class nhentaiapi():  
-    def __init__(self, code):
-        self.code = code
+def nhentai(awoos):
+    url = f"https://nhentai.net/api/gallery/{awoos}"
+    res = requests.get(url).json()
+    pages = res["images"]["pages"]
+    info = res["tags"]
+    title = res["title"]["english"]
+    links = []
+    tags = ""
+    artist = ''
+    total_pages = res['num_pages']
+    extensions = {
+        'j':'jpg',
+        'p':'png',
+        'g':'gif'
+    }
+    for i, x in enumerate(pages):
+        media_id = res["media_id"]
+        temp = x['t']
+        file = f"{i+1}.{extensions[temp]}"
+        link = f"https://i.nhentai.net/galleries/{media_id}/{file}"
+        links.append(link)
 
-    def get_chapter_by_code(code):  # returns list of image links of pages of full chapter [imglink1, imglink2, full chapter]
-        url = f"https://nhentai.net/g/{code}/1"
-        response = requests.get(url)
-        response_html = response.text
-        soup = BeautifulSoup(response_html, 'lxml')
-        page_count = soup.find("span", class_="num-pages").text
-        img_link = soup.find("section", id= "image-container").img
-        img_link_skeleton = img_link["src"].split("/")
-        list_of_pages = []
-        for i in range(int(page_count)):
-            temp = img_link_skeleton[-1] 
-            temp = temp.split(".")
-            temp[0] = str(i+1)
-            pagenum = ".".join(temp)
-            img_link_skeleton[-1] = pagenum
-            list_of_pages.append("/".join(img_link_skeleton))
-        return list_of_pages
+    for i in info:
+        if i["type"]=="tag":
+            tag = i['name']
+            tag = tag.split(" ")
+            tag = "_".join(tag)
+            tags+=f"#{tag} "
+        if i["type"]=="artist":
+            artist=f"{i['name']} "
+
+    post_content = "".join(f"<img src={link}><br>" for link in links)
+
+    post = telegraph.create_page(
+        f"{title}",
+        html_content=post_content,
+        author_name=f"AnimeGothBot", 
+        author_url=f"https://t.me/AnimeGothBot"
+    )
+    return title,tags,artist,total_pages,post['url'],links[0]

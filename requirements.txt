@@ -1,4 +1,6 @@
-telethon
+pyrogram
+TgCrypto
+telegraph
 requests_html
 requests
 bs4

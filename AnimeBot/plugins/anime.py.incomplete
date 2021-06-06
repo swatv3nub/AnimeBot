@@ -1,0 +1,75 @@
+from AnimeBot import goth, cmd
+from pyrogram import filters
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from api.gogoanimeapi import gogoanime as gogo
+import utils.formating_results as format
+from utils.helper_functions import *
+from utils.errors import capture_err
+
+@goth.on_message(cmd(["anime", "anime@AnimeGothBot"]))
+@capture_err
+async def anime(_, message):
+    query = message.text.split(" ", 1)
+    if len(query) == 1:
+        await message.reply_text("Command must be used like this\n/anime [name of anime]\nexample: /anime One Punch Man")
+        return
+    else:
+        query = query[1]
+        search_result = gogo.get_search_results(query)
+        try:
+            (names, ids) = format.format_search_results(search_result)
+            sed = []
+            for i in range(len(names)):
+                if len(names[i]) > 55:
+                    try:
+                        sed.append(
+                            InlineKeyboardMarkup
+                            [
+                                [
+                                    InlineKeyboardButton(text=f"{names[i][:22]}. . .{names[i][-22:]}", callback_data =f"split:{anime_name}:{ids[i][-25:]}")
+                                ]
+                            ]
+                        )
+                    except:
+                        message.reply_text("Name too long")
+                else:
+                    sed.append(
+                        InlineKeyboardMarkup
+                        [
+                            [
+                                InlineKeyboardButton(text=f"{names[i]}", callback_data =f"dets:{ids[i]}")
+                            ]
+                        ]
+                    )
+            await message.reply("Search Results:" reply_markup=sed)
+        except:
+            await message.reply_text("No Results found! Try Japanese Names once!!")
+        
+@goth.on_message(cmd(["latest", "latest@AnimeGothBot"]))
+@capture_err
+async def latest(_, message):
+    query = gogo.get_home_page()
+    (names, ids, epnums) = format.format_home_results(query)
+    inline = []
+    for i in range(len(names)):
+        try:
+            inline.append(
+                InlineKeyboardMarkup
+                [
+                    [
+                        InlineKeyboardButton(text=f"{names[i]}", callback_data=f"lt:{ids[i]}")
+                    ]
+                ]
+            )
+        except:
+            pass
+    await goth.reply_text("**Latest Animes:**", reply_markup=inline, parse_mode="markdown")
+    
+#CallBackQueries soon...
+
+@goth.on_callback_query(filters.regex("lt:"))
+async def callback_latest(_, CallBackQuery):
+    data = CallBackQuery.data
+    split_data = data.split(":")
+    animeid = split_data[-1]
+    await send_details(CallBackQuery, animeid)
