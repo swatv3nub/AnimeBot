@@ -41,7 +41,7 @@ async def anime(_, message):
                             ]
                         ]
                     )
-            await message.reply("Search Results:" reply_markup=sed)
+            await message.reply("Search Results:", reply_markup=sed)
         except:
             await message.reply_text("No Results found! Try Japanese Names once!!")
         
