@@ -82,25 +82,28 @@ pm = InlineKeyboardMarkup(
 async def batch(_, message):
     if message.chat.type != "private":
         await event.reply("If you want to download in batch contact me in pm", reply_markup=pm)
-            return
-        try:
-            text = message.text.split(" ", 1)
-            name = text[1]
-            split_data = name.split(":")
-            if int(split_data[2]) - int(split_data[1]) > 15:
-                await message.reply(
-                    "Batch Download is limited at 15 episodes due to performance issues\nPlease download in batches of less than 15 for now"
-                )
-            else:
-                for i in range(int(split_data[1]), (int(split_data[2]) + 1)):
-                    if await send_download_link(split_data[0], i) == False:
-                        break
-        except:
-            await message.reply("Something Went Wrong\nCheck /help for proper use of this command!")
+        return
+    try:
+        text = message.text.split(" ", 1)
+        name = text[1]
+        split_data = name.split(":")
+        if int(split_data[2]) - int(split_data[1]) > 15:
+            await message.reply(
+                "Batch Download is limited at 15 episodes due to performance issues\nPlease download in batches of less than 15 for now"
+            )
+        else:
+            for i in range(int(split_data[1]), (int(split_data[2]) + 1)):
+                if await send_download_link(split_data[0], i) == False:
+                    break
+    except:
+        await message.reply("Something Went Wrong\nCheck /help for proper use of this command!")
           
 @goth.on_message(cmd(["download", "download@AnimeGothBot"]))
 @capture_err
 async def dl(_, message):
+    if message.chat.type != "private":
+        await event.reply("If you want to download in batch contact me in pm", reply_markup=pm)
+        return
     try:
         text = message.text.split(" ", 1)
         anime_name = text[1]
@@ -121,8 +124,8 @@ async def dl(_, message):
                 document=f"{split_data[0]}.txt"
 
             )
-        except:
-            await message.reply("Something Went Wrong\nCheck /help for proper use of this command!")
+    except:
+        await message.reply("Something Went Wrong\nCheck /help for proper use of this command!")
             
 #CallBackQueries...
 
