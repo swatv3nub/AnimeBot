@@ -36,19 +36,20 @@ async def manga(_, message):
 @goth.on_message(cmd(["read", "read@AnimeGothBot"]))
 @capture_err
 async def read(_, message):
-    data = message.text.split(" ", 1)
-    if len(data) == 1:
-        await message.reply_text("Something Went Wrong! Check /help for proper usage!")
-        return
-    else:
-        data = data[1]
-        query = data.split(":")
-        chap = kiss.get_manga_chapter(query[0], query[1])
-        if chap == "Invalid Mangaid or chapter number":
+    try:
+        data = message.text.split(" ", 1)
+        if len(data) == 1:
             await message.reply_text("Something Went Wrong! Check /help for proper usage!")
             return
-        format.manga_chapter_html(f"{data[0]}{data[1]}", chap)
-        await message.reply("Open This in a Browser", document=f"{split_data[0]}{split_data[1]}.html")
+        else:
+            data = data[1]
+            query = data.split(":")
+            chap = kiss.get_manga_chapter(query[0], query[1])
+            if chap == "Invalid Mangaid or chapter number":
+                await message.reply_text("Something Went Wrong! Check /help for proper usage!")
+                return
+            format.manga_chapter_html(f"{data[0]}{data[1]}", chap)
+            await message.reply("Open This in a Browser", document=f"{split_data[0]}{split_data[1]}.html")
     except Exception as e:
             await message.reply({e})
             
