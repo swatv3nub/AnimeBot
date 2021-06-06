@@ -6,6 +6,7 @@ help_text = """List of commands:
 **/animeinfo <name>** : Info about the Anime
 
 **/airing <name>** : Next Episode of the anime.
+**/top [genre]** : Top anime of the genre [genre optional]
 
 **/latest** : to get list of latest episodes released
 

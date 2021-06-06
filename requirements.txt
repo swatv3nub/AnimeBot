@@ -4,3 +4,4 @@ telegraph
 requests_html
 requests
 bs4
+httpx

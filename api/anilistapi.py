@@ -1,5 +1,6 @@
 import math
 import time
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 def shorten(description, info='anilist.co'):
     ms_g = ""
@@ -29,6 +30,37 @@ def t(milliseconds: int) -> str:
         ((str(seconds) + " Seconds, ") if seconds else "") + \
         ((str(milliseconds) + " ms, ") if milliseconds else "")
     return tmp[:-2]
+    
+async def return_json(query: str, vars: dict, user: int = None):
+    response = requests.post(url, json={"query": query, "variables": vars}).json()
+    return response
+
+    
+async def get_top_animes(gnr: str, page, user):
+    vars_ = {"gnr": gnr.lower(), "page": int(page)}
+    query = top_query
+    if gnr=="None":
+        query = alltop_query
+        vars_ = {"page": int(page)}
+    result = await return_json(query, vars_, user=user)
+    if len(result['data']['Page']['media'])==0:
+        return [f"No results Found"]
+    data = result["data"]["Page"]
+    msg = f"Top animes for genre `{gnr.capitalize()}`"
+    for i in data:
+        msg += f"⚬ {i['media']['title']['romaji']}"
+    btn = []
+    if int(page)==1:
+        if int(data['pageInfo']['lastPage'])!=1:
+            btn.append([InlineKeyboardButton("Next", callback_data=f"topanimu_{gnr}_{int(page)+1}_{user}")])
+    elif int(page) == int(data['pageInfo']['lastPage']):
+        btn.append([InlineKeyboardButton("Prev", callback_data=f"topanimu_{gnr}_{int(page)-1}_{user}")])
+    else:
+        btn.append([
+            InlineKeyboardButton("Prev", callback_data=f"topanimu_{gnr}_{int(page)-1}_{user}"),
+            InlineKeyboardButton("Next", callback_data=f"topanimu_{gnr}_{int(page)+1}_{user}")
+        ])
+    return msg, InlineKeyboardMarkup(btn)
 
 
 airing_query = '''
@@ -144,5 +176,36 @@ query ($id: Int,$search: String) {
     }
 """
 
+top_query = """
+query ($gnr: String, $page: Int) {
+  Page (perPage: 15, page: $page) {
+    pageInfo {
+      lastPage
+    }
+    media (genre: $gnr, sort: SCORE_DESC, type: ANIME) {
+      title {
+        romaji
+      }
+    }
+  }
+}
+"""
+
+alltop_query = """
+query ($page: Int) {
+  Page (perPage: 15, page: $page) {
+    pageInfo {
+      lastPage
+    }
+    media (sort: SCORE_DESC, type: ANIME) {
+      title {
+        romaji
+      }
+    }
+  }
+}
+"""
+
 
 url = 'https://graphql.anilist.co'
+

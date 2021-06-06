@@ -28,7 +28,7 @@ async def anime_airing(_, message):
     
 @goth.on_message(cmd(["animeinfo", "animeinfo@AnimeGothBot"]))
 @capture_err
-async def anime_search(client, message):
+async def anime_search(_, message):
     search = message.text.split(' ', 1)
     if len(search) == 1:
         await message.delete()
@@ -79,7 +79,7 @@ async def anime_search(client, message):
    
 @goth.on_message(cmd(["mangainfo", "mangainfo@AnimeGothBot"]))
 @capture_err
-async def manga_search(client, message):
+async def manga_search(_, message):
     search = message.text.split(' ', 1)
     if len(search) == 1:
         await message.delete()
@@ -123,7 +123,7 @@ async def manga_search(client, message):
 
 @goth.on_message(cmd(["character", "character@AnimeGothBot"]))
 @capture_err
-async def character_search(client, message):
+async def character_search(_, message):
     search = message.text.split(' ', 1)
     if len(search) == 1:
         await message.delete()
@@ -143,3 +143,16 @@ async def character_search(client, message):
             await message.reply_photo(image, caption=ms_g)
         else:
             await message.reply(ms_g)
+            
+@goth.on_message(cmd(["top", f"top@AnimeGothBot"]))
+async def top_tags_cmd(_, message):
+    query = message.text.split(" ", 1)
+    get_tag = "None"
+    if len(query)==2:
+        get_tag = query[1]
+    user = message.from_user.id
+    result = await get_top_animes(get_tag, 1, user)
+    if len(result) == 1:
+        await message.reply_text(result[0])
+    msg, buttons = result
+    await goth.send_message(message.chat.id, msg, reply_markup=buttons)
