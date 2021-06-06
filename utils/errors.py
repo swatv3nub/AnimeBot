@@ -1,7 +1,8 @@
 import sys
 import traceback
 from functools import wraps
-from AnimeBot import goth, LOGS
+from AnimeBot import goth
+from config import LOGS
 
 
 def split_limits(text):
