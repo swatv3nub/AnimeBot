@@ -2,7 +2,7 @@ from AnimeBot import goth, cmd
 from pyrogram import filters
 from api.kissmangaapi import kissmangaapi as kiss
 from utils.helper_functions import *
-import utils.formatting_results as format
+import utils.formating_results as format
 from utils.errors import capture_err
 
 @goth.on_message(cmd(["manga", "manga@AnimeGothBot"]))
