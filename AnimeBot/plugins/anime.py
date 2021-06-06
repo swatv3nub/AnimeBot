@@ -63,7 +63,7 @@ async def latest(_, message):
             )
         except:
             pass
-    await goth.reply_text("**Latest Animes:**", reply_markup=inline, parse_mode="markdown")
+    await message.reply_text("**Latest Animes:**", reply_markup=inline, parse_mode="markdown")
     
 pm = InlineKeyboardMarkup(
             [

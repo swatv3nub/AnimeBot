@@ -57,4 +57,4 @@ async def read(_, message):
 async def callback_mangaxtra(_, CallBackQuery):
     data = CallBackQuery.data
     xtra = kiss.get_manga_details(data[4:])
-    await goth.send_document(CallBackQuery.message.chat.id, f"Name: {xtra[0]}\nGenre: {', '.join(xtra[2])}\nLatest Chapter: {xtra[3]}\n\n\nCopy This command and add chapter number at end\n\n`/read {data[4:]}:`", document=xtra[1])
+    await message.reply_document(f"Name: {xtra[0]}\nGenre: {', '.join(xtra[2])}\nLatest Chapter: {xtra[3]}\n\n\nCopy This command and add chapter number at end\n\n`/read {data[4:]}:`", document=xtra[1])
